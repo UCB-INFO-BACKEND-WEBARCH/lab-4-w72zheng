@@ -4,6 +4,7 @@ Complete TODO 1-5 in order.
 """
 
 from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
 
 # TODO 1: Import SQLAlchemy
 # from flask_sqlalchemy import SQLAlchemy
@@ -15,17 +16,37 @@ app = Flask(__name__)
 # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # db = SQLAlchemy(app)
 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///todos.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
 # ── TODO 2: Create TodoModel ──────────────────────────────────────────────────
 # Replace the in-memory list below with a SQLAlchemy model.
 # Hint: refer to your Book API code from class.
 
-todos = [
-    {"id": 1, "title": "Buy groceries",  "description": "", "status": "pending",     "priority": "medium"},
-    {"id": 2, "title": "Finish homework", "description": "", "status": "in_progress", "priority": "high"},
-    {"id": 3, "title": "Call dentist",    "description": "", "status": "done",        "priority": "low"},
-]
-next_id = 4
+#todos = [
+   # {"id": 1, "title": "Buy groceries",  "description": "", "status": "pending",     "priority": "medium"},
+   # {"id": 2, "title": "Finish homework", "description": "", "status": "in_progress", "priority": "high"},
+   # {"id": 3, "title": "Call dentist",    "description": "", "status": "done",        "priority": "low"},
+#]
+#next_id = 4
+
+class TodoModel(db.Model):
+    __tablename__ = "todos"
+    id          = db.Column(db.Integer, primary_key=True)
+    title       = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.String(500), default="")
+    status      = db.Column(db.String(20), default="pending")
+    priority    = db.Column(db.String(20), default="medium")
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "description": self.description,
+            "status": self.status,
+            "priority": self.priority
+        }
+
 
 # class TodoModel(db.Model):
 #     __tablename__ = "todos"
